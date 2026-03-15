@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
+</head>
+<body>
+    <h1>Socket Test</h1>
+    <script>
+        const socket = io('http://localhost:3000', {
+            transports: ['websocket'] // force WebSocket only
+        });
+        socket.on('connect', () => console.log('✅ Browser connected'));
+        socket.on('connect_error', (err) => console.error('❌ Connection error:', err));
+        socket.on('disconnect', (reason) => console.log('❌ Disconnected:', reason));
+    </script>
+</body>
+</html>

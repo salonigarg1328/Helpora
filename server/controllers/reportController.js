@@ -29,8 +29,10 @@ export const createReport = async (req, res) => {
     });
 
     await report.save();
-
-    // TODO: Emit real-time notification via Socket.io (Phase 4)
+console.log('✅ Emitting new-report event for report:', report._id);
+    // Emit real‑time event to all connected clients
+    const io = req.app.get('io');
+    io.emit('new-report', report);
 
     res.status(201).json(report);
   } catch (error) {
@@ -64,7 +66,7 @@ export const getNearbyReports = async (req, res) => {
         },
       },
       status: 'pending', // Only show pending reports
-    }).populate('victim', 'name phone'); // Optionally populate victim details
+    }).populate('victim', 'name phone');
 
     res.json(reports);
   } catch (error) {
@@ -92,8 +94,14 @@ export const acceptReport = async (req, res) => {
     report.assignedNgo = req.user.id;
     report.status = 'accepted';
     await report.save();
-
-    // TODO: Notify victim via Socket.io
+console.log('✅ Emitting report-accepted event for report:', report._id);
+    // Emit real‑time event
+    const io = req.app.get('io');
+    io.emit('report-accepted', { 
+      reportId: report._id, 
+      assignedNgo: req.user.id,
+      victimId: report.victim 
+    });
 
     res.json(report);
   } catch (error) {
@@ -124,6 +132,14 @@ export const resolveReport = async (req, res) => {
 
     report.status = 'resolved';
     await report.save();
+     console.log('✅ Emitting report-resolved event for report:', report._id);
+    // Emit real‑time event
+    const io = req.app.get('io');
+    io.emit('report-resolved', { 
+      reportId: report._id,
+      victimId: report.victim,
+      assignedNgo: report.assignedNgo 
+    });
 
     res.json(report);
   } catch (error) {
