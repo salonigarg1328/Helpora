@@ -1,0 +1,55 @@
+import mongoose from 'mongoose';
+
+const disasterReportSchema = new mongoose.Schema({
+  victim: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  disasterType: {
+    type: String,
+    required: true,
+    enum: ['flood', 'earthquake', 'fire', 'cyclone', 'other'],
+  },
+  description: String,
+  location: {
+    type: {
+      type: String,
+      enum: ['Point'],
+      required: true,
+    },
+    coordinates: {
+      type: [Number], // [longitude, latitude]
+      required: true,
+    },
+  },
+  urgencyLevel: {
+    type: String,
+    enum: ['low', 'medium', 'high', 'critical'],
+    default: 'medium',
+  },
+  status: {
+    type: String,
+    enum: ['pending', 'accepted', 'resolved'],
+    default: 'pending',
+  },
+  assignedNgo: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  },
+  images: [String],
+  isSOS: {
+    type: Boolean,
+    default: false,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
+// Geospatial index for location queries
+disasterReportSchema.index({ location: '2dsphere' });
+
+const DisasterReport = mongoose.model('DisasterReport', disasterReportSchema);
+export default DisasterReport;
