@@ -22,3 +22,10 @@ export const getNearbyReports = (lat, lng, radius = 10) =>
   API.get(`/reports/nearby?lat=${lat}&lng=${lng}&radius=${radius}`);
 export const acceptReport = (id) => API.patch(`/reports/${id}/accept`);
 export const resolveReport = (id) => API.patch(`/reports/${id}/resolve`);
+export const getMyResources = () => API.get('/resources/me');
+export const addResource = (data) => API.post('/resources', data);
+export const updateResource = (id, data) => API.put(`/resources/${id}`, data);
+export const deleteResource = (id) => API.delete(`/resources/${id}`);
+export const getUnverifiedNgos = () => API.get('/admin/ngos/unverified');
+export const verifyNgo = (id) => API.patch(`/admin/verify/${id}`);
+export const getStats = () => API.get('/admin/stats');

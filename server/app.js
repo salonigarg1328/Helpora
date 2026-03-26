@@ -8,6 +8,7 @@ import { createServer } from 'http';          // new
 import { Server } from 'socket.io'; 
 import connectDB from "./config/db.js";
 import reportRoutes from './routes/reportRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 const app = express();
 const httpServer = createServer(app);          // create HTTP server
 const io = new Server(httpServer, {
@@ -23,7 +24,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
 app.use(cors({credentials:true}));
-
+app.use('/api/admin', adminRoutes);
 
 // Make io accessible in controllers (optional)
 app.set('io', io);

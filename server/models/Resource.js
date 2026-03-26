@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const resourceSchema = new mongoose.Schema({
   ngo: {
@@ -26,4 +26,5 @@ const resourceSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model('Resource', resourceSchema);
+const Resource = mongoose.model('Resource', resourceSchema);
+export default Resource;

@@ -13,14 +13,15 @@ const Login = () => {
     try {
       const res = await login({ email, password });
       localStorage.setItem('token', res.data.token);
-      localStorage.setItem('userId', res.data._id);          // 👈 store the NGO’s ID
+      localStorage.setItem('userId', res.data._id);
+      localStorage.setItem('userName', res.data.name);
       localStorage.setItem('userRole', res.data.role);
 
       if (res.data.role === 'victim') {
         navigate('/victim-dashboard');
       } else if (res.data.role === 'ngo') {
         navigate('/ngo-dashboard');
-      }
+      }else if (res.data.role === 'admin') navigate('/admin-dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
     }

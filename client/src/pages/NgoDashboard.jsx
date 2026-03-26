@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { getNearbyReports, acceptReport, resolveReport } from '../services/api';
 import socket from '../services/socket';
+import ResourceManager from '../components/ResourceManager';
 
 const NgoDashboard = () => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
+  const userName = localStorage.getItem('userName'); // get the stored name
 
   const fetchReports = async () => {
     try {
@@ -71,14 +73,14 @@ const NgoDashboard = () => {
 
   return (
     <div>
-      <h1>NGO Dashboard</h1>
+      <h1>Welcome, {userName || 'NGO'} Dashboard</h1>
       <h2>Nearby Pending Reports</h2>
       {reports.length === 0 ? (
         <p>No reports found nearby.</p>
       ) : (
         <ul>
           {reports.map((report) => {
-            // DEBUG LOG: check assignedNgo vs userId
+            // DEBUG: check assignedNgo vs userId
             console.log('🔍 Report assignedNgo:', report.assignedNgo, ' | userId:', localStorage.getItem('userId'));
             return (
               <li key={report._id} style={{ border: '1px solid #ccc', margin: '10px', padding: '10px' }}>
@@ -100,6 +102,7 @@ const NgoDashboard = () => {
           })}
         </ul>
       )}
+      <ResourceManager />
     </div>
   );
 };
