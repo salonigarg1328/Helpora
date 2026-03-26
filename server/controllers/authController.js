@@ -8,13 +8,17 @@ export const register = async (req, res) => {
   try {
     const { name, email, password, role, phone, location } = req.body;
 
+    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists' });
     }
 
-    if (role === 'ngo' && (!location || !location.coordinates)) {
-      return res.status(400).json({ message: 'NGOs must provide location coordinates' });
+    // If role is NGO, location must be provided
+    if (role === 'ngo') {
+      if (!location || !location.coordinates || location.coordinates.length !== 2) {
+        return res.status(400).json({ message: 'NGOs must provide valid location coordinates' });
+      }
     }
 
     const user = new User({
@@ -27,7 +31,6 @@ export const register = async (req, res) => {
     });
 
     await user.save();
-
     const token = generateToken(user._id, user.role);
 
     res.status(201).json({

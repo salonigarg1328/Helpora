@@ -29,11 +29,10 @@ export const createReport = async (req, res) => {
     });
 
     await report.save();
-console.log('✅ Emitting new-report event for report:', report._id);
-    // Emit real‑time event to all connected clients
-    const io = req.app.get('io');
-    io.emit('new-report', report);
-
+// After saving the report
+console.log(`📤 Emitting new-report event for report: ${report._id}`);
+const io = req.app.get('io');
+io.emit('new-report', report);
     res.status(201).json(report);
   } catch (error) {
     console.error(error);
@@ -81,47 +80,34 @@ export const getNearbyReports = async (req, res) => {
 export const acceptReport = async (req, res) => {
   try {
     const report = await DisasterReport.findById(req.params.id);
-
-    if (!report) {
-      return res.status(404).json({ message: 'Report not found' });
-    }
-
+    if (!report) return res.status(404).json({ message: 'Report not found' });
     if (report.status !== 'pending') {
       return res.status(400).json({ message: 'Report already accepted or resolved' });
     }
 
-    // Assign this NGO to the report
-    report.assignedNgo = req.user.id;
     report.status = 'accepted';
+    report.assignedNgo = req.user.id;          // 👈 store the NGO's ID
     await report.save();
-console.log('✅ Emitting report-accepted event for report:', report._id);
-    // Emit real‑time event
+
     const io = req.app.get('io');
-    io.emit('report-accepted', { 
-      reportId: report._id, 
-      assignedNgo: req.user.id,
-      victimId: report.victim 
+    io.emit('report-accepted', {
+      reportId: report._id,
+      assignedNgo: req.user.id,               // 👈 send the same ID
+      victimId: report.victim,
     });
 
     res.json(report);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Resolve a report
-// @route   PATCH /api/reports/:id/resolve
-// @access  Private (Assigned NGO or Admin)
 export const resolveReport = async (req, res) => {
   try {
     const report = await DisasterReport.findById(req.params.id);
+    if (!report) return res.status(404).json({ message: 'Report not found' });
 
-    if (!report) {
-      return res.status(404).json({ message: 'Report not found' });
-    }
-
-    // Check if user is assigned NGO or admin
     if (report.assignedNgo?.toString() !== req.user.id && req.user.role !== 'admin') {
       return res.status(403).json({ message: 'Not authorized to resolve this report' });
     }
@@ -132,18 +118,17 @@ export const resolveReport = async (req, res) => {
 
     report.status = 'resolved';
     await report.save();
-     console.log('✅ Emitting report-resolved event for report:', report._id);
-    // Emit real‑time event
+
     const io = req.app.get('io');
-    io.emit('report-resolved', { 
+    io.emit('report-resolved', {
       reportId: report._id,
       victimId: report.victim,
-      assignedNgo: report.assignedNgo 
+      assignedNgo: report.assignedNgo,
     });
 
     res.json(report);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({ message: error.message });
   }
 };

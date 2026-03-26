@@ -12,8 +12,7 @@ const app = express();
 const httpServer = createServer(app);          // create HTTP server
 const io = new Server(httpServer, {
   cors: {
-    origin: '*',
-    methods: ['GET', 'POST']
+    origin: ['http://localhost:5173', 'http://localhost:3000']
   }
 });
 console.log('✅ Socket.io server created');
