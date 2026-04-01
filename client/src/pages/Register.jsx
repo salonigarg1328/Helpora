@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { register } from '../services/api';
 import MapPicker from '../components/MapPicker'; // or LocationPicker from Option A
 
@@ -19,9 +19,9 @@ const Register = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
- const handleLocationSelect = (location) => {
-  setFormData({ ...formData, location });
-};
+  const handleLocationSelect = (location) => {
+    setFormData({ ...formData, location });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,95 +41,97 @@ const Register = () => {
   };
 
   return (
-    <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
-      <h2>Register</h2>
-      {error && <p style={{color:'red'}}>{error}</p>}
-      
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '15px' }}>
-          <input 
-            name="name" 
-            placeholder="Full Name" 
-            value={formData.name}
-            onChange={handleChange} 
-            required 
-            style={{ width: '100%', padding: '8px' }}
-          />
+    <div className="auth-page container">
+      <section className="panel auth-card">
+        <h1>Create your Helpora account</h1>
+        <p className="auth-subtitle">Register as a victim or NGO responder and get real-time disaster support tools.</p>
+
+        <div className="form-grid">
+          {error && <p className="feedback feedback-error">{error}</p>}
+
+          <form className="form-grid" onSubmit={handleSubmit}>
+            <div className="field">
+              <label htmlFor="name">Full name</label>
+              <input
+                id="name"
+                className="input"
+                name="name"
+                placeholder="Your full name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="field">
+              <label htmlFor="email">Email</label>
+              <input
+                id="email"
+                className="input"
+                name="email"
+                placeholder="you@example.com"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="field">
+              <label htmlFor="password">Password</label>
+              <input
+                id="password"
+                className="input"
+                name="password"
+                placeholder="Create a secure password"
+                type="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="field">
+              <label htmlFor="role">Account role</label>
+              <select
+                id="role"
+                className="select"
+                name="role"
+                value={formData.role}
+                onChange={handleChange}
+              >
+                <option value="victim">Victim</option>
+                <option value="ngo">NGO</option>
+              </select>
+            </div>
+
+            <div className="field">
+              <label htmlFor="phone">Phone number</label>
+              <input
+                id="phone"
+                className="input"
+                name="phone"
+                placeholder="Optional"
+                value={formData.phone}
+                onChange={handleChange}
+              />
+            </div>
+
+            {formData.role === 'ngo' && (
+              <div className="field">
+                <label>Select NGO location</label>
+                <MapPicker onLocationSelect={handleLocationSelect} />
+              </div>
+            )}
+
+            <button className="btn btn-primary" type="submit">Register</button>
+          </form>
+
+          <p>
+            Already have an account? <Link to="/login">Login</Link>
+          </p>
         </div>
-
-        <div style={{ marginBottom: '15px' }}>
-          <input 
-            name="email" 
-            placeholder="Email" 
-            type="email" 
-            value={formData.email}
-            onChange={handleChange} 
-            required 
-            style={{ width: '100%', padding: '8px' }}
-          />
-        </div>
-
-        <div style={{ marginBottom: '15px' }}>
-          <input 
-            name="password" 
-            placeholder="Password" 
-            type="password" 
-            value={formData.password}
-            onChange={handleChange} 
-            required 
-            style={{ width: '100%', padding: '8px' }}
-          />
-        </div>
-
-        <div style={{ marginBottom: '15px' }}>
-          <select 
-            name="role" 
-            value={formData.role}
-            onChange={handleChange}
-            style={{ width: '100%', padding: '8px' }}
-          >
-            <option value="victim">Victim</option>
-            <option value="ngo">NGO</option>
-          </select>
-        </div>
-
-        <div style={{ marginBottom: '15px' }}>
-          <input 
-            name="phone" 
-            placeholder="Phone Number" 
-            value={formData.phone}
-            onChange={handleChange} 
-            style={{ width: '100%', padding: '8px' }}
-          />
-        </div>
-
-        {/* Show map only for NGO registration */}
-        {formData.role === 'ngo' && (
-  <div>
-    <h3>Select NGO Location</h3>
-    <MapPicker onLocationSelect={handleLocationSelect} />
-  </div>
-)}
-
-        <button 
-          type="submit" 
-          style={{
-            width: '100%',
-            padding: '10px',
-            backgroundColor: '#4CAF50',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
-        >
-          Register
-        </button>
-      </form>
-      
-      <p style={{ marginTop: '15px' }}>
-        Already have an account? <a href="/login">Login</a>
-      </p>
+      </section>
     </div>
   );
 };

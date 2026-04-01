@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -27,40 +27,36 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px' }}>
-      <h2>Forgot Password</h2>
-      {message && <p style={{ color: 'green' }}>{message}</p>}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '15px' }}>
-          <input
-            type="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={{ width: '100%', padding: '10px' }}
-          />
+    <div className="auth-page container">
+      <section className="panel auth-card" style={{ width: 'min(480px, 95vw)' }}>
+        <h1>Forgot password</h1>
+        <p className="auth-subtitle">Enter your account email and we will send a reset link.</p>
+
+        <div className="form-grid">
+          {message && <p className="feedback feedback-success">{message}</p>}
+          {error && <p className="feedback feedback-error">{error}</p>}
+          <form className="form-grid" onSubmit={handleSubmit}>
+            <div className="field">
+              <label htmlFor="email">Email</label>
+              <input
+                id="email"
+                className="input"
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <button className="btn btn-primary" type="submit" disabled={loading}>
+              {loading ? 'Sending...' : 'Send Reset Link'}
+            </button>
+          </form>
+          <p>
+            <Link to="/login">Back to Login</Link>
+          </p>
         </div>
-        <button
-          type="submit"
-          disabled={loading}
-          style={{
-            width: '100%',
-            padding: '10px',
-            backgroundColor: '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
-        >
-          {loading ? 'Sending...' : 'Send Reset Link'}
-        </button>
-      </form>
-      <p style={{ marginTop: '15px' }}>
-        <a href="/login">Back to Login</a>
-      </p>
+      </section>
     </div>
   );
 };

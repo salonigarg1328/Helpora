@@ -9,6 +9,7 @@ import { Server } from 'socket.io';
 import connectDB from "./config/db.js";
 import reportRoutes from './routes/reportRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import resourceRoutes from './routes/resourceRoutes.js';
 const app = express();
 const httpServer = createServer(app);          // create HTTP server
 const io = new Server(httpServer, {
@@ -31,6 +32,7 @@ app.set('io', io);
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/resources', resourceRoutes);
 // Basic route
 app.get('/', (req, res) => {
   res.json({ message: 'Hello from Helpora Backend!' });

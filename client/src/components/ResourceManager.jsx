@@ -66,53 +66,81 @@ const ResourceManager = () => {
   };
 
   return (
-    <div style={{ marginTop: '30px', borderTop: '1px solid #ccc', paddingTop: '20px' }}>
-      <h3>Resource Management</h3>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <form onSubmit={handleSubmit} style={{ marginBottom: '20px' }}>
-        <select name="resourceType" value={form.resourceType} onChange={handleChange} required>
-          <option value="">Select Type</option>
-          <option value="food">Food</option>
-          <option value="water">Water</option>
-          <option value="medical">Medical</option>
-          <option value="shelter">Shelter</option>
-          <option value="transport">Transport</option>
-          <option value="other">Other</option>
-        </select>
-        <input
-          type="number"
-          name="quantity"
-          placeholder="Quantity"
-          value={form.quantity}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="text"
-          name="unit"
-          placeholder="Unit (kg, liters, etc.)"
-          value={form.unit}
-          onChange={handleChange}
-        />
-        <button type="submit" disabled={loading}>
-          {editingId ? 'Update' : 'Add'} Resource
-        </button>
-        {editingId && (
-          <button type="button" onClick={() => { setEditingId(null); setForm({ resourceType: '', quantity: '', unit: 'units' }); }}>
-            Cancel
+    <div>
+      <h3 className="section-title" style={{ fontSize: '1.15rem' }}>Resource Management</h3>
+      {error && <p className="feedback feedback-error">{error}</p>}
+
+      <form onSubmit={handleSubmit} className="form-grid" style={{ marginBottom: '1rem' }}>
+        <div className="field">
+          <label>Resource Type</label>
+          <select className="select" name="resourceType" value={form.resourceType} onChange={handleChange} required>
+            <option value="">Select Type</option>
+            <option value="food">Food</option>
+            <option value="water">Water</option>
+            <option value="medical">Medical</option>
+            <option value="shelter">Shelter</option>
+            <option value="transport">Transport</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div className="field">
+          <label>Quantity</label>
+          <input
+            className="input"
+            type="number"
+            name="quantity"
+            placeholder="Quantity"
+            value={form.quantity}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="field">
+          <label>Unit</label>
+          <input
+            className="input"
+            type="text"
+            name="unit"
+            placeholder="kg, liters, kits"
+            value={form.unit}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="inline-actions">
+          <button className="btn btn-primary" type="submit" disabled={loading}>
+            {editingId ? 'Update' : 'Add'} Resource
           </button>
-        )}
+          {editingId && (
+            <button
+              className="btn btn-secondary"
+              type="button"
+              onClick={() => {
+                setEditingId(null);
+                setForm({ resourceType: '', quantity: '', unit: 'units' });
+              }}
+            >
+              Cancel
+            </button>
+          )}
+        </div>
       </form>
 
-      <ul>
-        {resources.map((res) => (
-          <li key={res._id} style={{ marginBottom: '10px' }}>
-            <strong>{res.resourceType}</strong> – {res.quantity} {res.unit}
-            <button onClick={() => handleEdit(res)} style={{ marginLeft: '10px' }}>Edit</button>
-            <button onClick={() => handleDelete(res._id)} style={{ marginLeft: '5px' }}>Delete</button>
-          </li>
-        ))}
-      </ul>
+      {resources.length === 0 ? (
+        <p>No resources added yet.</p>
+      ) : (
+        <ul className="report-list">
+          {resources.map((res) => (
+            <li key={res._id} className="report-card">
+              <p><strong>{res.resourceType}</strong></p>
+              <p>{res.quantity} {res.unit}</p>
+              <div className="inline-actions">
+                <button className="btn btn-secondary" onClick={() => handleEdit(res)}>Edit</button>
+                <button className="btn btn-danger" onClick={() => handleDelete(res._id)}>Delete</button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };

@@ -1,5 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import LandingPage from './pages/LandingPage';
+
 import Login from './pages/Login';
 import Register from './pages/Register';
 import VictimDashboard from './pages/VictimDashboard';
@@ -17,7 +19,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
-
+      <Route path="/" element={<LandingPage />} />
         {/* Protected routes */}
         <Route
           path="/victim-dashboard"
@@ -44,7 +46,6 @@ function App() {
           }
         />
 
-        <Route path="/" element={<Navigate to="/login" />} />
       </Routes>
     </BrowserRouter>
   );

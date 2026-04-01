@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getUnverifiedNgos, verifyNgo, getStats } from '../services/api';
 
 const AdminDashboard = () => {
@@ -6,6 +7,7 @@ const AdminDashboard = () => {
   const [ngos, setNgos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchData();
@@ -40,34 +42,64 @@ const AdminDashboard = () => {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <div>
-      <h1>Admin Dashboard</h1>
-      {message && <p>{message}</p>}
+    <div className="dashboard-page container">
+      <header className="dashboard-header">
+        <div>
+          <h1 className="section-title">Admin Dashboard</h1>
+          <p>Monitor platform health and verify NGO registrations.</p>
+        </div>
+        <button
+          className="btn btn-secondary"
+          onClick={() => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userRole');
+            navigate('/login');
+          }}
+        >
+          Logout
+        </button>
+      </header>
 
-      <h2>System Statistics</h2>
-      {stats && (
-        <ul>
-          <li>Total Reports: {stats.totalReports}</li>
-          <li>Pending Reports: {stats.pendingReports}</li>
-          <li>Total NGOs: {stats.totalNgos}</li>
-          <li>Pending NGOs: {stats.pendingNgos}</li>
-          <li>Total Victims: {stats.totalVictims}</li>
-        </ul>
+      {message && (
+        <p className={message.includes('failed') ? 'feedback feedback-error' : 'feedback feedback-success'}>
+          {message}
+        </p>
       )}
 
-      <h2>Unverified NGOs</h2>
-      {ngos.length === 0 ? (
-        <p>No pending NGOs.</p>
-      ) : (
-        <ul>
-          {ngos.map(ngo => (
-            <li key={ngo._id}>
-              {ngo.name} ({ngo.email}) – {ngo.phone}
-              <button onClick={() => handleVerify(ngo._id)}>Verify</button>
-            </li>
-          ))}
-        </ul>
-      )}
+      <section className="panel" style={{ padding: '1rem', marginBottom: '1rem' }}>
+        <h2 className="section-title" style={{ fontSize: '1.2rem' }}>System Statistics</h2>
+        {stats && (
+          <div className="stats-grid">
+            <div className="stat-item"><span>Total Reports</span><strong>{stats.totalReports}</strong></div>
+            <div className="stat-item"><span>Pending Reports</span><strong>{stats.pendingReports}</strong></div>
+            <div className="stat-item"><span>Total NGOs</span><strong>{stats.totalNgos}</strong></div>
+            <div className="stat-item"><span>Pending NGOs</span><strong>{stats.pendingNgos}</strong></div>
+            <div className="stat-item"><span>Total Victims</span><strong>{stats.totalVictims}</strong></div>
+          </div>
+        )}
+      </section>
+
+      <section className="panel" style={{ padding: '1rem' }}>
+        <h2 className="section-title" style={{ fontSize: '1.2rem' }}>Unverified NGOs</h2>
+        {ngos.length === 0 ? (
+          <p>No pending NGOs.</p>
+        ) : (
+          <ul className="report-list">
+            {ngos.map((ngo) => (
+              <li key={ngo._id} className="report-card">
+                <p><strong>{ngo.name}</strong></p>
+                <p>{ngo.email}</p>
+                <p>{ngo.phone || 'No phone provided'}</p>
+                <div className="inline-actions">
+                  <button className="btn btn-primary" onClick={() => handleVerify(ngo._id)}>
+                    Verify NGO
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
     </div>
   );
 };

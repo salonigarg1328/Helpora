@@ -60,86 +60,93 @@ const VictimDashboard = () => {
   };
 
   return (
-    <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
-      <h1>Victim Dashboard</h1>
-      <button onClick={() => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('userRole');
-        navigate('/login');
-      }}>Logout</button>
-
-      {/* 👇 Notification banner */}
-      {notification && (
-        <div style={{
-          backgroundColor: '#d4edda',
-          color: '#155724',
-          padding: '10px',
-          borderRadius: '4px',
-          margin: '10px 0'
-        }}>
-          {notification}
-          <button
-            onClick={() => setNotification(null)}
-            style={{ float: 'right', border: 'none', background: 'none', cursor: 'pointer' }}
-          >×</button>
+    <div className="dashboard-page container">
+      <header className="dashboard-header">
+        <div>
+          <h1 className="section-title">Victim Dashboard</h1>
+          <p>Submit incidents quickly and share exact location for faster support.</p>
         </div>
-      )}
+        <button
+          className="btn btn-secondary"
+          onClick={() => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('userRole');
+            navigate('/login');
+          }}
+        >
+          Logout
+        </button>
+      </header>
 
-      <h2>Create Report</h2>
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '15px' }}>
-          <label>Disaster Type:</label>
-          <select
-            value={formData.disasterType}
-            onChange={(e) => setFormData({...formData, disasterType: e.target.value})}
-            required
-            style={{ width: '100%', padding: '8px' }}
-          >
-            <option value="">Select</option>
-            <option value="flood">Flood</option>
-            <option value="earthquake">Earthquake</option>
-            <option value="fire">Fire</option>
-            <option value="cyclone">Cyclone</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
+      <section className="panel" style={{ padding: '1rem' }}>
+        {notification && (
+          <div className="feedback feedback-success" style={{ marginBottom: '1rem' }}>
+            {notification}
+            <button
+              onClick={() => setNotification(null)}
+              className="btn btn-secondary"
+              style={{ float: 'right', padding: '0.3rem 0.65rem' }}
+            >
+              Close
+            </button>
+          </div>
+        )}
 
-        <div style={{ marginBottom: '15px' }}>
-          <label>Description:</label>
-          <textarea
-            value={formData.description}
-            onChange={(e) => setFormData({...formData, description: e.target.value})}
-            rows="3"
-            style={{ width: '100%', padding: '8px' }}
-          />
-        </div>
+        <h2 className="section-title" style={{ fontSize: '1.2rem' }}>Create Report</h2>
+        <form className="form-grid" onSubmit={handleSubmit}>
+          <div className="field">
+            <label>Disaster Type</label>
+            <select
+              className="select"
+              value={formData.disasterType}
+              onChange={(e) => setFormData({ ...formData, disasterType: e.target.value })}
+              required
+            >
+              <option value="">Select</option>
+              <option value="flood">Flood</option>
+              <option value="earthquake">Earthquake</option>
+              <option value="fire">Fire</option>
+              <option value="cyclone">Cyclone</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
 
-        <div style={{ marginBottom: '15px' }}>
-          <button type="button" onClick={getLocation} style={{ padding: '8px' }}>
-            Get Current Location
-          </button>
-          {formData.location.coordinates.length > 0 && (
-            <p style={{ marginTop: '5px' }}>
-              Coordinates: {formData.location.coordinates[0].toFixed(4)}, {formData.location.coordinates[1].toFixed(4)}
-            </p>
-          )}
-        </div>
+          <div className="field">
+            <label>Description</label>
+            <textarea
+              className="textarea"
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              rows="4"
+              placeholder="Describe what happened and what support is needed"
+            />
+          </div>
 
-        <div style={{ marginBottom: '15px' }}>
-          <label>
+          <div className="inline-actions">
+            <button type="button" className="btn btn-secondary" onClick={getLocation}>
+              Get Current Location
+            </button>
+            {formData.location.coordinates.length > 0 && (
+              <span className="chip">
+                {formData.location.coordinates[0].toFixed(4)}, {formData.location.coordinates[1].toFixed(4)}
+              </span>
+            )}
+          </div>
+
+          <label style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
             <input
               type="checkbox"
               checked={formData.isSOS}
-              onChange={(e) => setFormData({...formData, isSOS: e.target.checked})}
+              onChange={(e) => setFormData({ ...formData, isSOS: e.target.checked })}
             />
-            This is an SOS emergency
+            Mark this as SOS emergency
           </label>
-        </div>
 
-        <button type="submit" disabled={loading} style={{ padding: '10px 20px' }}>
-          {loading ? 'Submitting...' : 'Submit Report'}
-        </button>
-      </form>
+          <button className="btn btn-primary" type="submit" disabled={loading}>
+            {loading ? 'Submitting...' : 'Submit Report'}
+          </button>
+        </form>
+      </section>
     </div>
   );
 };

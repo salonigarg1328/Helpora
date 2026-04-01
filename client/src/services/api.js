@@ -11,10 +11,10 @@ API.interceptors.request.use((req) => {
   }
   return req;
 });
-const token = localStorage.getItem('token');
+/*const token = localStorage.getItem('token');
 fetch('http://localhost:3000/api/reports/nearby?lat=28.7041&lng=77.1025&radius=10', {
   headers: { 'Authorization': `Bearer ${token}` }
-}).then(res => res.json()).then(data => console.log(data));
+}).then(res => res.json()).then(data => console.log(data));*/
 export const login = (formData) => API.post('/auth/login', formData);
 export const register = (formData) => API.post('/auth/register', formData);
 export const createReport = (reportData) => API.post('/reports', reportData);
