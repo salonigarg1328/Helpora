@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { getNearbyReports, acceptReport, resolveReport } from '../services/api';
 import socket from '../services/socket';
 import ResourceManager from '../components/ResourceManager';
+import ReportsMap from '../components/ReportsMap';
 
 const NgoDashboard = () => {
   const [reports, setReports] = useState([]);
+  const [selectedReportId, setSelectedReportId] = useState(null);
   const [loading, setLoading] = useState(true);
   const userName = localStorage.getItem('userName'); // get the stored name
   const navigate = useNavigate();
@@ -92,42 +94,67 @@ const NgoDashboard = () => {
         </button>
       </header>
 
-      <section className="panel" style={{ padding: '1rem' }}>
-        <h2 className="section-title" style={{ fontSize: '1.2rem' }}>Nearby Reports</h2>
+      <section className="panel panel-pad">
+        <h2 className="section-title panel-title">Nearby Reports</h2>
         {reports.length === 0 ? (
           <p>No reports found nearby.</p>
         ) : (
-          <ul className="report-list">
-            {reports.map((report) => {
-              console.log('Report assignedNgo:', report.assignedNgo, ' | userId:', localStorage.getItem('userId'));
-              return (
-                <li key={report._id} className="report-card">
-                  <p><strong>Type:</strong> {report.disasterType} {report.isSOS && '🚨 SOS'}</p>
-                  <p><strong>Description:</strong> {report.description || 'No description'}</p>
-                  <p>
-                    <strong>Location:</strong> {report.location.coordinates[0].toFixed(4)},{' '}
-                    {report.location.coordinates[1].toFixed(4)}
-                  </p>
-                  <p><strong>Urgency:</strong> {report.urgencyLevel}</p>
-                  <p><strong>Status:</strong> {report.status}</p>
+          <div className="dashboard-split">
+            <div>
+              <ReportsMap reports={reports} onReportSelect={setSelectedReportId} />
+            </div>
 
-                  <div className="inline-actions">
-                    {report.status === 'pending' && (
-                      <button className="btn btn-primary" onClick={() => handleAccept(report._id)}>Accept</button>
-                    )}
+            <div>
+              <ul className="report-list">
+                {reports.map((report) => (
+                  <li
+                    key={report._id}
+                    className={`report-card ${selectedReportId === report._id ? 'report-card-active' : ''}`}
+                    onClick={() => setSelectedReportId(report._id)}
+                  >
+                    <p><strong>Type:</strong> {report.disasterType} {report.isSOS ? 'SOS' : ''}</p>
+                    <p><strong>Description:</strong> {report.description || 'No description'}</p>
+                    <p>
+                      <strong>Location:</strong> {report.location.coordinates[0].toFixed(4)},{' '}
+                      {report.location.coordinates[1].toFixed(4)}
+                    </p>
+                    <p><strong>Urgency:</strong> {report.urgencyLevel}</p>
+                    <p><strong>Status:</strong> {report.status}</p>
 
-                    {report.status === 'accepted' && report.assignedNgo === localStorage.getItem('userId') && (
-                      <button className="btn btn-secondary" onClick={() => handleResolve(report._id)}>Resolve</button>
-                    )}
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
+                    <div className="inline-actions">
+                      {report.status === 'pending' && (
+                        <button
+                          className="btn btn-primary"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            handleAccept(report._id);
+                          }}
+                        >
+                          Accept
+                        </button>
+                      )}
+
+                      {report.status === 'accepted' && report.assignedNgo === localStorage.getItem('userId') && (
+                        <button
+                          className="btn btn-secondary"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            handleResolve(report._id);
+                          }}
+                        >
+                          Resolve
+                        </button>
+                      )}
+                    </div> 
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         )}
       </section>
 
-      <section className="panel" style={{ marginTop: '1rem', padding: '1rem' }}>
+      <section className="panel panel-pad section-gap-top">
         <ResourceManager />
       </section>
     </div>

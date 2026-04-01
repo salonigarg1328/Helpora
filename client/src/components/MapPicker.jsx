@@ -108,37 +108,21 @@ function SearchControl({ map, onLocationSelect }) {
   };
 
   return (
-    <div style={{ position: 'absolute', top: '10px', left: '50px', zIndex: 1000 }}>
-      <form onSubmit={handleSearch}>
+    <div className="map-search-wrap">
+      <form onSubmit={handleSearch} className="map-search-form">
         <input
           type="text"
           value={searchText}
           onChange={handleInputChange}
           placeholder="Search for a location..."
-          style={{
-            padding: '8px',
-            width: '250px',
-            borderRadius: '4px',
-            border: '1px solid #ccc'
-          }}
+          className="map-search-input"
         />
-        <button type="submit" style={{ padding: '8px', marginLeft: '5px' }}>
+        <button type="submit" className="btn btn-secondary map-search-btn">
           Search
         </button>
       </form>
       {suggestions.length > 0 && (
-        <div style={{
-          position: 'absolute',
-          top: '40px',
-          left: '0',
-          right: '0',
-          backgroundColor: 'white',
-          border: '1px solid #ccc',
-          borderRadius: '4px',
-          maxHeight: '200px',
-          overflowY: 'auto',
-          zIndex: 1001
-        }}>
+        <div className="map-search-suggestions">
           {suggestions.map((suggestion, index) => (
             <div
               key={index}
@@ -146,13 +130,7 @@ function SearchControl({ map, onLocationSelect }) {
                 setSearchText(suggestion);
                 setSuggestions([]);
               }}
-              style={{
-                padding: '8px',
-                cursor: 'pointer',
-                borderBottom: '1px solid #eee'
-              }}
-              onMouseEnter={(e) => e.target.style.backgroundColor = '#f0f0f0'}
-              onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
+              className="map-search-suggestion"
             >
               {suggestion}
             </div>
@@ -163,11 +141,11 @@ function SearchControl({ map, onLocationSelect }) {
   );
 }
 
-const MapPicker = ({ onLocationSelect }) => {
+const MapPicker = ({ onLocationSelect, initialCenter = [20, 0], initialZoom = 2 }) => {
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [address, setAddress] = useState('');
   const [loadingAddress, setLoadingAddress] = useState(false);
-  const mapRef = useRef(null);
+  const [mapInstance, setMapInstance] = useState(null);
 
   // BigDataCloud + cache wrapper
   const updateAddress = useCallback(async (lat, lng) => {
@@ -202,8 +180,8 @@ const MapPicker = ({ onLocationSelect }) => {
         const { latitude, longitude } = position.coords;
         const loc = { type: 'Point', coordinates: [longitude, latitude] };
         handleLocationSelect(loc);
-        if (mapRef.current) {
-          mapRef.current.setView([latitude, longitude], 13);
+        if (mapInstance) {
+          mapInstance.setView([latitude, longitude], 13);
         }
       },
       (error) => {
@@ -215,43 +193,35 @@ const MapPicker = ({ onLocationSelect }) => {
   };
 
   return (
-    <div>
-      <div style={{ marginBottom: '10px' }}>
+    <div className="map-picker-root">
+      <div className="map-toolbar">
         <button
           type="button"
           onClick={getCurrentLocation}
-          style={{
-            padding: '8px 16px',
-            backgroundColor: '#4CAF50',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            marginRight: '10px'
-          }}
+          className="btn btn-primary"
         >
-          📍 Use My Current Location
+          Use My Current Location
         </button>
-        <span style={{ fontSize: '0.9em', color: '#666' }}>
+        <span className="map-toolbar-note">
           Or click on the map to place a marker
         </span>
       </div>
 
-      <div style={{ position: 'relative', height: '400px', marginBottom: '20px' }}>
+      <div className="map-shell">
         <MapContainer
-          center={[20, 0]}
-          zoom={2}
-          style={{ height: '100%', width: '100%', borderRadius: '8px' }}
-          whenCreated={mapInstance => { mapRef.current = mapInstance; }}
+          center={initialCenter}
+          zoom={initialZoom}
+          className="leaflet-map"
+          whenReady={(event) => setMapInstance(event.target)}
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           <LocationMarker onLocationSelect={handleLocationSelect} />
-          {mapRef.current && (
+          {mapInstance && (
             <SearchControl 
-              map={mapRef.current} 
+              map={mapInstance} 
               onLocationSelect={handleLocationSelect}
             />
           )}
@@ -259,14 +229,9 @@ const MapPicker = ({ onLocationSelect }) => {
       </div>
 
       {selectedLocation && (
-        <div style={{ 
-          padding: '10px', 
-          backgroundColor: '#e8f4fd',
-          borderRadius: '4px',
-          marginTop: '10px'
-        }}>
+        <div className="map-selection-details">
           <div><strong>Coordinates:</strong> {selectedLocation.coordinates[1].toFixed(4)}°N, {selectedLocation.coordinates[0].toFixed(4)}°E</div>
-          <div style={{ marginTop: '5px' }}>
+          <div className="map-address-line">
             <strong>Location (approx.):</strong> {loadingAddress ? 'Loading...' : address}
           </div>
         </div>

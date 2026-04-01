@@ -67,10 +67,10 @@ const ResourceManager = () => {
 
   return (
     <div>
-      <h3 className="section-title" style={{ fontSize: '1.15rem' }}>Resource Management</h3>
+      <h3 className="section-title panel-title">Resource Management</h3>
       {error && <p className="feedback feedback-error">{error}</p>}
 
-      <form onSubmit={handleSubmit} className="form-grid" style={{ marginBottom: '1rem' }}>
+      <form onSubmit={handleSubmit} className="form-grid section-gap-bottom">
         <div className="field">
           <label>Resource Type</label>
           <select className="select" name="resourceType" value={form.resourceType} onChange={handleChange} required>

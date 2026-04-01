@@ -1,13 +1,7 @@
 import React from 'react';
-import { Link, Navigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const LandingPage = () => {
-  const token = localStorage.getItem('token');
-  const role = localStorage.getItem('userRole');
-  if (token && role === 'victim') return <Navigate to="/victim-dashboard" />;
-  if (token && role === 'ngo') return <Navigate to="/ngo-dashboard" />;
-  if (token && role === 'admin') return <Navigate to="/admin-dashboard" />;
-
   const features = [
     {
       title: 'Live Emergency Alerts',

@@ -35,7 +35,7 @@ const ResetPassword = () => {
 
   return (
     <div className="auth-page container">
-      <section className="panel auth-card" style={{ width: 'min(500px, 95vw)' }}>
+      <section className="panel auth-card auth-card-compact">
         <h1>Reset password</h1>
         <p className="auth-subtitle">Set a new password to secure your Helpora account.</p>
 

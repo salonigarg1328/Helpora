@@ -66,8 +66,8 @@ const AdminDashboard = () => {
         </p>
       )}
 
-      <section className="panel" style={{ padding: '1rem', marginBottom: '1rem' }}>
-        <h2 className="section-title" style={{ fontSize: '1.2rem' }}>System Statistics</h2>
+      <section className="panel panel-pad section-gap-bottom">
+        <h2 className="section-title panel-title">System Statistics</h2>
         {stats && (
           <div className="stats-grid">
             <div className="stat-item"><span>Total Reports</span><strong>{stats.totalReports}</strong></div>
@@ -79,8 +79,8 @@ const AdminDashboard = () => {
         )}
       </section>
 
-      <section className="panel" style={{ padding: '1rem' }}>
-        <h2 className="section-title" style={{ fontSize: '1.2rem' }}>Unverified NGOs</h2>
+      <section className="panel panel-pad">
+        <h2 className="section-title panel-title">Unverified NGOs</h2>
         {ngos.length === 0 ? (
           <p>No pending NGOs.</p>
         ) : (

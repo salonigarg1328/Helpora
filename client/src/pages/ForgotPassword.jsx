@@ -28,7 +28,7 @@ const ForgotPassword = () => {
 
   return (
     <div className="auth-page container">
-      <section className="panel auth-card" style={{ width: 'min(480px, 95vw)' }}>
+      <section className="panel auth-card auth-card-compact">
         <h1>Forgot password</h1>
         <p className="auth-subtitle">Enter your account email and we will send a reset link.</p>
 

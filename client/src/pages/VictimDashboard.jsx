@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createReport } from '../services/api';
 import socket from '../services/socket'; // 👈 import socket
+import MapPicker from '../components/MapPicker';
 
 const VictimDashboard = () => {
   const [formData, setFormData] = useState({
@@ -28,21 +29,11 @@ const VictimDashboard = () => {
     };
   }, []);
 
-  const getLocation = () => {
-    if (!navigator.geolocation) {
-      alert('Geolocation not supported');
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const { longitude, latitude } = pos.coords;
-        setFormData({
-          ...formData,
-          location: { coordinates: [longitude, latitude] },
-        });
-      },
-      (err) => alert('Location error: ' + err.message)
-    );
+  const handleLocationSelect = (location) => {
+    setFormData((prev) => ({
+      ...prev,
+      location,
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -78,21 +69,17 @@ const VictimDashboard = () => {
         </button>
       </header>
 
-      <section className="panel" style={{ padding: '1rem' }}>
+      <section className="panel panel-pad">
         {notification && (
-          <div className="feedback feedback-success" style={{ marginBottom: '1rem' }}>
-            {notification}
-            <button
-              onClick={() => setNotification(null)}
-              className="btn btn-secondary"
-              style={{ float: 'right', padding: '0.3rem 0.65rem' }}
-            >
-              Close
+          <div className="feedback feedback-success notification-wrap">
+            <span>{notification}</span>
+            <button onClick={() => setNotification(null)} className="btn btn-secondary btn-sm">
+              Dismiss
             </button>
           </div>
         )}
 
-        <h2 className="section-title" style={{ fontSize: '1.2rem' }}>Create Report</h2>
+        <h2 className="section-title panel-title">Create Report</h2>
         <form className="form-grid" onSubmit={handleSubmit}>
           <div className="field">
             <label>Disaster Type</label>
@@ -122,18 +109,21 @@ const VictimDashboard = () => {
             />
           </div>
 
-          <div className="inline-actions">
-            <button type="button" className="btn btn-secondary" onClick={getLocation}>
-              Get Current Location
-            </button>
+          <div className="field">
+            <label>Select incident location</label>
+            <MapPicker
+              onLocationSelect={handleLocationSelect}
+              initialCenter={[28.6139, 77.209]}
+              initialZoom={6}
+            />
             {formData.location.coordinates.length > 0 && (
-              <span className="chip">
-                {formData.location.coordinates[0].toFixed(4)}, {formData.location.coordinates[1].toFixed(4)}
-              </span>
+              <p className="location-coords">
+                Coordinates: {formData.location.coordinates[0].toFixed(4)}, {formData.location.coordinates[1].toFixed(4)}
+              </p>
             )}
           </div>
 
-          <label style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          <label className="inline-check">
             <input
               type="checkbox"
               checked={formData.isSOS}
