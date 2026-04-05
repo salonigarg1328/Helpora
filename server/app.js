@@ -14,7 +14,8 @@ const app = express();
 const httpServer = createServer(app);          // create HTTP server
 const io = new Server(httpServer, {
   cors: {
-    origin: ['http://localhost:5173', 'http://localhost:3000']
+     origin: process.env.CLIENT_URL || 'http://localhost:5173', 
+    credentials: true
   }
 });
 console.log('✅ Socket.io server created');
@@ -50,6 +51,4 @@ io.on('connection', (socket) => {
     console.log('❌ Connection error:', err.message);
   });
 });
-httpServer.listen(port, () => {
-  console.log(`🚀 Server running at http://localhost:${port}`);
-});
+c
