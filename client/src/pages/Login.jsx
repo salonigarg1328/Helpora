@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { login } from '../services/api';
 
 const Login = () => {
@@ -12,18 +13,24 @@ const Login = () => {
     e.preventDefault();
     try {
       const res = await login({ email, password });
+      const user = res.data;
       localStorage.setItem('token', res.data.token);
-      localStorage.setItem('userId', res.data._id);
-      localStorage.setItem('userName', res.data.name);
-      localStorage.setItem('userRole', res.data.role);
+      localStorage.setItem('userId', user._id);
+      localStorage.setItem('userName', user.name);
+      localStorage.setItem('userRole', user.role);
+      toast.success('Welcome back');
 
-      if (res.data.role === 'victim') {
+      if (user.role === 'victim') {
         navigate('/victim-dashboard');
-      } else if (res.data.role === 'ngo') {
+      } else if (user.role === 'ngo') {
         navigate('/ngo-dashboard');
-      }else if (res.data.role === 'admin') navigate('/admin-dashboard');
+      } else if (user.role === 'admin') {
+        navigate('/admin-dashboard');
+      }
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed');
+      const message = err.response?.data?.message || 'Login failed';
+      setError(message);
+      toast.error(message);
     }
   };
 

@@ -141,7 +141,7 @@ function SearchControl({ map, onLocationSelect }) {
   );
 }
 
-const MapPicker = ({ onLocationSelect, initialCenter = [20, 0], initialZoom = 2 }) => {
+const MapPicker = ({ onLocationSelect, onError, initialCenter = [20, 0], initialZoom = 2 }) => {
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [address, setAddress] = useState('');
   const [loadingAddress, setLoadingAddress] = useState(false);
@@ -170,7 +170,7 @@ const MapPicker = ({ onLocationSelect, initialCenter = [20, 0], initialZoom = 2 
 
   const getCurrentLocation = () => {
     if (!navigator.geolocation) {
-      alert('Geolocation is not supported by your browser');
+      onError?.('Geolocation is not supported by your browser');
       // Fallback: try BigDataCloud IP-based (no coordinates)
       updateAddress();
       return;
@@ -185,7 +185,7 @@ const MapPicker = ({ onLocationSelect, initialCenter = [20, 0], initialZoom = 2 
         }
       },
       (error) => {
-        alert('Unable to retrieve your location: ' + error.message);
+        onError?.(`Unable to retrieve your location: ${error.message}`);
         // Still try to get an approximate location via IP
         updateAddress(); // no lat/lng → BigDataCloud uses IP fallback
       }

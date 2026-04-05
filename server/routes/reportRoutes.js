@@ -5,6 +5,8 @@ import {
   getNearbyReports,
   acceptReport,
   resolveReport,
+  getMyReports,           
+  getMyAcceptedReports, 
 } from '../controllers/reportController.js';
 import { protect, authorize } from '../middleware/auth.js';
 
@@ -25,4 +27,6 @@ router.patch('/:id/accept', authorize('ngo'), acceptReport);
 // NGO or admin: resolve a report
 router.patch('/:id/resolve', authorize('ngo', 'admin'), resolveReport);
 router.get('/:reportId/recommendations', protect, authorize('ngo'), getRecommendations);
+router.get('/my-reports', protect, authorize('victim'), getMyReports);
+router.get('/my-accepted', protect, authorize('ngo'), getMyAcceptedReports);
 export default router;

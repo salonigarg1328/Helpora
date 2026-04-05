@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import toast, { Toaster } from 'react-hot-toast';
+import { Link, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import {
   getNearbyReports,
   acceptReport,
@@ -16,7 +16,6 @@ import RecommendationsModal from '../components/RecommendationsModal';
 const NgoDashboard = () => {
   const [reports, setReports] = useState([]);
   const [resources, setResources] = useState([]);
-  const [resourceRefreshKey, setResourceRefreshKey] = useState(0);
   const [selectedReportId, setSelectedReportId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -38,18 +37,6 @@ const NgoDashboard = () => {
       toast.error('Error fetching data');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const refreshResources = async () => {
-    try {
-      const res = await getMyResources();
-      setResources(res.data);
-      setResourceRefreshKey((current) => current + 1);
-      return res;
-    } catch (err) {
-      console.error('Failed to refresh resources:', err);
-      throw err;
     }
   };
 
@@ -81,27 +68,17 @@ const NgoDashboard = () => {
       );
       toast.success('Report resolved');
     });
-socket.on('resources-updated', (data) => {
-  console.log('🔁 resources-updated received:', data);
-  const storedUserId = localStorage.getItem('userId');
-  console.log(`data.ngoId: ${data.ngoId} (type: ${typeof data.ngoId})`);
-  console.log(`storedUserId: ${storedUserId} (type: ${typeof storedUserId})`);
 
-  // Force string comparison
-  if (String(data.ngoId) === String(storedUserId)) {
-    console.log('✅ IDs match – refetching resources...');
-    refreshResources()
-      .then(res => {
-        console.log('Fetched resources response:', JSON.stringify(res.data));
+    socket.on('resources-updated', (data) => {
+      console.log('resources-updated received:', data);
+      if (String(data.ngoId) === String(localStorage.getItem('userId'))) {
+        getMyResources().then(res => setResources(res.data));
         toast.success('Resources updated');
-      })
-      .catch(err => console.error('Failed to refetch resources:', err));
-  } else {
-    console.log('❌ IDs do not match – skipping update');
-  }
-});
-socket.on('low-stock', (data) => {
-      if (data.ngoId === localStorage.getItem('userId')) {
+      }
+    });
+
+    socket.on('low-stock', (data) => {
+      if (String(data.ngoId) === String(localStorage.getItem('userId'))) {
         const alertMsg = data.alerts.map(a => `${a.resourceType} (${a.quantity} left)`).join(', ');
         toast.error(`⚠️ Low stock: ${alertMsg}`);
       }
@@ -144,7 +121,6 @@ socket.on('low-stock', (data) => {
     }
   };
 
-  // Compute match percentage based on whether the NGO has enough quantity for each needed resource
   const computeMatch = (report) => {
     const needed = report.neededResources || [];
     if (needed.length === 0) return { matched: [], percentage: 0, hasMatch: false };
@@ -160,22 +136,24 @@ socket.on('low-stock', (data) => {
 
   return (
     <div className="dashboard-page container">
-      <Toaster position="top-right" />
       <header className="dashboard-header">
         <div>
           <h1 className="section-title">Welcome, {userName || 'NGO'} </h1>
           <p>Track nearby reports, accept assignments, and manage inventory in one place.</p>
         </div>
-        <button
-          className="btn btn-secondary"
-          onClick={() => {
-            localStorage.removeItem('token');
-            localStorage.removeItem('userRole');
-            navigate('/login');
-          }}
-        >
-          Logout
-        </button>
+        <div className="inline-actions">
+          <Link to="/ngo-dashboard/history" className="btn btn-secondary">View History</Link>
+          <button
+            className="btn btn-secondary"
+            onClick={() => {
+              localStorage.removeItem('token');
+              localStorage.removeItem('userRole');
+              navigate('/login');
+            }}
+          >
+            Logout
+          </button>
+        </div>
       </header>
 
       <section className="panel panel-pad">
@@ -206,7 +184,6 @@ socket.on('low-stock', (data) => {
                       <p><strong>Urgency:</strong> {report.urgencyLevel}</p>
                       <p><strong>Status:</strong> {report.status}</p>
 
-                      {/* Display needed resources with quantities */}
                       {report.neededResources && report.neededResources.length > 0 && (
                         <p>
                           <strong>Needs:</strong>{' '}
@@ -265,8 +242,7 @@ socket.on('low-stock', (data) => {
 
       <section className="panel panel-pad section-gap-top">
         <ResourceManager
-          refreshKey={resourceRefreshKey}
-          onResourceUpdate={refreshResources}
+          onResourceUpdate={() => getMyResources().then(res => setResources(res.data))}
         />
       </section>
 

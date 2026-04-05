@@ -1,11 +1,12 @@
 import { io } from 'socket.io-client';
+import { apiBaseUrl } from './api';
 
-const socket = io('http://localhost:3000'); // your backend URL
+const socket = io(apiBaseUrl, {
+	transports: ['websocket', 'polling'],
+});
 
-// 👇 Add this line to expose socket globally
-window.socket = socket;
-
-// Optional: log to confirm it's created
-console.log('🔥 Socket created, ID:', socket.id);
+if (typeof window !== 'undefined') {
+	window.socket = socket;
+}
 
 export default socket;

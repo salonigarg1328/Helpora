@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import { forgotPassword } from '../services/api';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -16,11 +17,14 @@ const ForgotPassword = () => {
     setMessage('');
 
     try {
-      await axios.post('http://localhost:3000/api/auth/forgot-password', { email });
+      await forgotPassword({ email });
       setMessage('Password reset link sent! Check your email (or console).');
+      toast.success('Reset link generated');
       setTimeout(() => navigate('/login'), 3000);
     } catch (err) {
-      setError(err.response?.data?.message || 'Something went wrong');
+      const message = err.response?.data?.message || 'Something went wrong';
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }

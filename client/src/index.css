@@ -1,20 +1,31 @@
+@import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap');
 
+@theme {
+  --color-primary: #2563eb;
+  --color-secondary: #0d9488;
+  --color-urgent: #dc2626;
+  --color-warning: #d97706;
+  --color-success: #059669;
+  --color-background: #f9fafb;
+}
+
 :root {
-  --bg: #f4f8fa;
+  --bg: #f9fafb;
   --surface: #ffffff;
-  --surface-2: #f9fcfd;
-  --text: #0d1f2d;
-  --text-soft: #4a5d6d;
-  --brand: #007f8b;
-  --brand-dark: #00616c;
-  --accent: #ff6b2d;
-  --danger: #d73d5c;
-  --ok: #168a53;
+  --surface-2: #eff6ff;
+  --text: #0f172a;
+  --text-soft: #475569;
+  --brand: #2563eb;
+  --brand-dark: #1d4ed8;
+  --accent: #0d9488;
+  --danger: #dc2626;
+  --ok: #059669;
+  --warning: #d97706;
   --border: #d6e3ea;
-  --ring: 0 0 0 3px rgba(0, 127, 139, 0.16);
-  --shadow-sm: 0 8px 24px rgba(13, 31, 45, 0.08);
-  --shadow-md: 0 16px 40px rgba(13, 31, 45, 0.12);
+  --ring: 0 0 0 3px rgba(37, 99, 235, 0.16);
+  --shadow-sm: 0 8px 24px rgba(15, 23, 42, 0.08);
+  --shadow-md: 0 16px 40px rgba(15, 23, 42, 0.12);
   --radius: 14px;
   --radius-sm: 10px;
 }
@@ -34,9 +45,9 @@ body {
   margin: 0;
   min-width: 320px;
   background:
-    radial-gradient(circle at 10% 10%, rgba(0, 127, 139, 0.14), transparent 34%),
-    radial-gradient(circle at 90% 8%, rgba(255, 107, 45, 0.12), transparent 30%),
-    linear-gradient(180deg, #f8fcff 0%, var(--bg) 100%);
+    radial-gradient(circle at 10% 10%, rgba(37, 99, 235, 0.14), transparent 34%),
+    radial-gradient(circle at 90% 8%, rgba(13, 148, 136, 0.12), transparent 30%),
+    linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
   color: var(--text);
   font-family: 'Manrope', sans-serif;
   text-rendering: optimizeLegibility;
@@ -116,7 +127,7 @@ textarea {
   border-radius: 999px;
   font-size: 0.78rem;
   font-weight: 700;
-  background: #e7f4f6;
+  background: #dbeafe;
   color: var(--brand-dark);
 }
 
@@ -553,7 +564,7 @@ textarea {
   margin-top: 1rem;
   text-align: center;
   padding: 1.6rem;
-  background: linear-gradient(120deg, #005963, #007f8b);
+  background: linear-gradient(120deg, #0f172a, #2563eb 55%, #0d9488);
   color: #fff;
   border-radius: 18px;
 }

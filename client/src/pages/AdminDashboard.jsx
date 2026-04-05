@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { getUnverifiedNgos, verifyNgo, getStats } from '../services/api';
 
 const AdminDashboard = () => {
@@ -21,6 +22,7 @@ const AdminDashboard = () => {
     } catch (err) {
       console.error(err);
       setMessage('Failed to load data');
+      toast.error('Failed to load data');
     } finally {
       setLoading(false);
     }
@@ -31,15 +33,17 @@ const AdminDashboard = () => {
       await verifyNgo(id);
       setNgos(ngos.filter(ngo => ngo._id !== id));
       setMessage('NGO verified successfully');
+      toast.success('NGO verified successfully');
       // Refresh stats
       const statsRes = await getStats();
       setStats(statsRes.data);
     } catch (err) {
       setMessage('Verification failed');
+      toast.error('Verification failed');
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className="loading">Loading dashboard...</div>;
 
   return (
     <div className="dashboard-page container">

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { createReport } from '../services/api';
 import socket from '../services/socket';
 import MapPicker from '../components/MapPicker';
@@ -17,10 +18,13 @@ const VictimDashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Listen for report-accepted events
     socket.on('report-accepted', (data) => {
       console.log('✅ Report accepted:', data);
       setNotification(`Your report ${data.reportId} was accepted by an NGO.`);
+      toast.success('Your report was accepted!');
     });
+
     return () => {
       socket.off('report-accepted');
     };
@@ -30,13 +34,11 @@ const VictimDashboard = () => {
     setFormData((prev) => ({ ...prev, location }));
   };
 
-  // Handle resource type and quantity
   const handleResourceChange = (resourceType, quantity) => {
     setFormData((prev) => {
       const existingIndex = prev.neededResources.findIndex(r => r.resourceType === resourceType);
       if (existingIndex >= 0) {
         if (quantity <= 0) {
-          // Remove if quantity is zero or negative
           const updated = prev.neededResources.filter(r => r.resourceType !== resourceType);
           return { ...prev, neededResources: updated };
         } else {
@@ -59,7 +61,7 @@ const VictimDashboard = () => {
     setLoading(true);
     try {
       await createReport(formData);
-      alert('Report submitted');
+      toast.success('Report submitted successfully');
       setFormData({
         disasterType: '',
         description: '',
@@ -68,7 +70,7 @@ const VictimDashboard = () => {
         neededResources: [],
       });
     } catch (err) {
-      alert('Error: ' + err.response?.data?.message);
+      toast.error('Error: ' + err.response?.data?.message);
     } finally {
       setLoading(false);
     }
@@ -81,16 +83,19 @@ const VictimDashboard = () => {
           <h1 className="section-title">Victim Dashboard</h1>
           <p>Submit incidents quickly and share exact location for faster support.</p>
         </div>
-        <button
-          className="btn btn-secondary"
-          onClick={() => {
-            localStorage.removeItem('token');
-            localStorage.removeItem('userRole');
-            navigate('/login');
-          }}
-        >
-          Logout
-        </button>
+        <div className="inline-actions">
+          <Link to="/victim-dashboard/history" className="btn btn-secondary">View History</Link>
+          <button
+            className="btn btn-secondary"
+            onClick={() => {
+              localStorage.removeItem('token');
+              localStorage.removeItem('userRole');
+              navigate('/login');
+            }}
+          >
+            Logout
+          </button>
+        </div>
       </header>
 
       <section className="panel panel-pad">
@@ -133,7 +138,6 @@ const VictimDashboard = () => {
             />
           </div>
 
-          {/* Resource selection with quantity inputs */}
           <div className="field">
             <label>What do you need? (type and quantity)</label>
             <div className="grid grid-cols-2 gap-3 mt-2">

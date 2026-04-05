@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { register } from '../services/api';
-import MapPicker from '../components/MapPicker'; // or LocationPicker from Option A
+import MapPicker from '../components/MapPicker';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -34,9 +35,12 @@ const Register = () => {
 
     try {
       await register(formData);
+      toast.success('Account created. You can log in now.');
       navigate('/login');
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed');
+      const message = err.response?.data?.message || 'Registration failed';
+      setError(message);
+      toast.error(message);
     }
   };
 
@@ -120,7 +124,7 @@ const Register = () => {
             {formData.role === 'ngo' && (
               <div className="field">
                 <label>Select NGO location</label>
-                <MapPicker onLocationSelect={handleLocationSelect} />
+                <MapPicker onLocationSelect={handleLocationSelect} onError={(message) => toast.error(message)} />
               </div>
             )}
 

@@ -99,26 +99,30 @@ export const acceptReport = async (req, res) => {
     await report.save();
 
     const needed = report.neededResources || [];
-    const deductionAmount = 10; // or use exact quantity from victim if you stored it
     const lowStockAlerts = [];
-  console.log('=== ACCEPT REPORT ===');
-console.log('Report neededResources:', JSON.stringify(needed));
-for (const need of needed) {
-  console.log(`Looking for resource: ${need.resourceType}, needed quantity: ${need.quantity}`);
-  const resource = await Resource.findOne({ ngo: req.user.id, resourceType: need.resourceType });
-  if (resource) {
-    console.log(`Found resource, old quantity: ${resource.quantity}`);
-    const deduction = need.quantity;
-    resource.quantity = Math.max(0, resource.quantity - deduction);
-    await resource.save();
-    console.log(`New quantity: ${resource.quantity}`);
-  } else {
-    console.log(`❌ Resource not found for type: ${need.resourceType}`);
-  }
-}    const io = req.app.get('io');
+    console.log('=== ACCEPT REPORT ===');
+    console.log('Report neededResources:', JSON.stringify(needed));
+    for (const need of needed) {
+      console.log(`Looking for resource: ${need.resourceType}, needed quantity: ${need.quantity}`);
+      const resource = await Resource.findOne({ ngo: req.user.id, resourceType: need.resourceType });
+      if (resource) {
+        console.log(`Found resource, old quantity: ${resource.quantity}`);
+        const deduction = need.quantity;
+        resource.quantity = Math.max(0, resource.quantity - deduction);
+        await resource.save();
+        console.log(`New quantity: ${resource.quantity}`);
+        if (resource.quantity < 20 && resource.quantity + deduction >= 20) {
+          lowStockAlerts.push({ resourceType: need.resourceType, quantity: resource.quantity });
+        }
+      } else {
+        console.log(`❌ Resource not found for type: ${need.resourceType}`);
+      }
+    }
+
+    const io = req.app.get('io');
     io.emit('report-accepted', { reportId: report._id, assignedNgo: req.user.id, victimId: report.victim });
     io.emit('resources-updated', { ngoId: req.user.id });
-console.log('Emitted resources-updated for NGO:', req.user.id);
+    console.log('Emitted resources-updated for NGO:', req.user.id);
     if (lowStockAlerts.length > 0) {
       io.emit('low-stock', { ngoId: req.user.id, alerts: lowStockAlerts });
     }
@@ -148,5 +152,31 @@ export const resolveReport = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Get all reports submitted by the logged-in victim
+export const getMyReports = async (req, res) => {
+  try {
+    const reports = await DisasterReport.find({ victim: req.user.id })
+      .sort({ createdAt: -1 })
+      .populate('assignedNgo', 'name');
+    res.json(reports);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// @desc    Get all reports accepted/resolved by the logged-in NGO
+export const getMyAcceptedReports = async (req, res) => {
+  try {
+    const reports = await DisasterReport.find({ assignedNgo: req.user.id })
+      .sort({ createdAt: -1 })
+      .populate('victim', 'name phone');
+    res.json(reports);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };

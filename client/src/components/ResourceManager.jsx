@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { getMyResources, addResource, updateResource, deleteResource } from '../services/api';
 
 const ResourceManager = ({ refreshKey = 0, onResourceUpdate }) => {
@@ -75,7 +76,9 @@ const ResourceManager = ({ refreshKey = 0, onResourceUpdate }) => {
         fetchResources();
       }
     } catch (err) {
-      alert('Delete failed');
+      const message = err.response?.data?.message || 'Delete failed';
+      setError(message);
+      toast.error(message);
     }
   };
 
