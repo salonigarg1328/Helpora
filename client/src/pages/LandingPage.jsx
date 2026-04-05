@@ -1,13 +1,17 @@
 import React from 'react';
-import { Link, Navigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const LandingPage = () => {
   const token = localStorage.getItem('token');
   const role = localStorage.getItem('userRole');
-
-  if (token && role === 'victim') return <Navigate to="/victim-dashboard" replace />;
-  if (token && role === 'ngo') return <Navigate to="/ngo-dashboard" replace />;
-  if (token && role === 'admin') return <Navigate to="/admin-dashboard" replace />;
+  const dashboardPath =
+    role === 'victim'
+      ? '/victim-dashboard'
+      : role === 'ngo'
+        ? '/ngo-dashboard'
+        : role === 'admin'
+          ? '/admin-dashboard'
+          : '/login';
 
   const features = [
     {
@@ -51,7 +55,11 @@ const LandingPage = () => {
             <span>Helpora</span>
           </Link>
           <div className="actions">
-            <Link to="/login" className="btn btn-secondary">Login</Link>
+            {token ? (
+              <Link to={dashboardPath} className="btn btn-secondary">Go to Dashboard</Link>
+            ) : (
+              <Link to="/login" className="btn btn-secondary">Login</Link>
+            )}
             <Link to="/register" className="btn btn-primary">Join Helpora</Link>
           </div>
         </div>
@@ -71,7 +79,7 @@ const LandingPage = () => {
               </p>
               <div className="hero-actions">
                 <Link to="/register" className="btn btn-primary">Create Account</Link>
-                <Link to="/login" className="btn btn-secondary">Open Dashboard</Link>
+                <Link to={token ? dashboardPath : '/login'} className="btn btn-secondary">Open Dashboard</Link>
               </div>
               <div className="metrics">
                 <div className="metric">
