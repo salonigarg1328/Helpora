@@ -1,4 +1,5 @@
 import express from 'express';
+import { getRecommendations } from '../controllers/reportController.js';
 import {
   createReport,
   getNearbyReports,
@@ -23,5 +24,5 @@ router.patch('/:id/accept', authorize('ngo'), acceptReport);
 
 // NGO or admin: resolve a report
 router.patch('/:id/resolve', authorize('ngo', 'admin'), resolveReport);
-
+router.get('/:reportId/recommendations', protect, authorize('ngo'), getRecommendations);
 export default router;

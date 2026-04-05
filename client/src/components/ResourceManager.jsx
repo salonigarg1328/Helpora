@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getMyResources, addResource, updateResource, deleteResource } from '../services/api';
 
-const ResourceManager = () => {
+const ResourceManager = ({ refreshKey = 0, onResourceUpdate }) => {
   const [resources, setResources] = useState([]);
   const [form, setForm] = useState({ resourceType: '', quantity: '', unit: 'units' });
   const [editingId, setEditingId] = useState(null);
@@ -22,6 +22,12 @@ const ResourceManager = () => {
     fetchResources();
   }, []);
 
+  useEffect(() => {
+    if (refreshKey > 0) {
+      fetchResources();
+    }
+  }, [refreshKey]);
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -38,7 +44,11 @@ const ResourceManager = () => {
       }
       setForm({ resourceType: '', quantity: '', unit: 'units' });
       setEditingId(null);
-      fetchResources();
+      if (onResourceUpdate) {
+        await onResourceUpdate();
+      } else {
+        fetchResources();
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Error saving resource');
     } finally {
@@ -59,7 +69,11 @@ const ResourceManager = () => {
     if (!window.confirm('Delete this resource?')) return;
     try {
       await deleteResource(id);
-      fetchResources();
+      if (onResourceUpdate) {
+        await onResourceUpdate();
+      } else {
+        fetchResources();
+      }
     } catch (err) {
       alert('Delete failed');
     }
@@ -97,14 +111,15 @@ const ResourceManager = () => {
         </div>
         <div className="field">
           <label>Unit</label>
-          <input
-            className="input"
-            type="text"
-            name="unit"
-            placeholder="kg, liters, kits"
-            value={form.unit}
-            onChange={handleChange}
-          />
+          <select className="select" name="unit" value={form.unit} onChange={handleChange} required>
+            <option value="units">Units</option>
+            <option value="kg">Kilograms (kg)</option>
+            <option value="liters">Liters (L)</option>
+            <option value="boxes">Boxes</option>
+            <option value="tents">Tents</option>
+            <option value="kits">Kits</option>
+            <option value="vehicles">Vehicles</option>
+          </select>
         </div>
         <div className="inline-actions">
           <button className="btn btn-primary" type="submit" disabled={loading}>

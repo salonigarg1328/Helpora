@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createReport } from '../services/api';
-import socket from '../services/socket'; // 👈 import socket
+import socket from '../services/socket';
 import MapPicker from '../components/MapPicker';
 
 const VictimDashboard = () => {
@@ -10,30 +10,48 @@ const VictimDashboard = () => {
     description: '',
     location: { coordinates: [] },
     isSOS: false,
+    neededResources: [], // array of { resourceType, quantity }
   });
   const [loading, setLoading] = useState(false);
-  const [notification, setNotification] = useState(null); // for displaying messages
+  const [notification, setNotification] = useState(null);
   const navigate = useNavigate();
 
-  // 👇 Listen for report‑accepted events
   useEffect(() => {
     socket.on('report-accepted', (data) => {
       console.log('✅ Report accepted:', data);
       setNotification(`Your report ${data.reportId} was accepted by an NGO.`);
-      // You can also update a list of your reports if you maintain one
     });
-
-    // Cleanup on unmount
     return () => {
       socket.off('report-accepted');
     };
   }, []);
 
   const handleLocationSelect = (location) => {
-    setFormData((prev) => ({
-      ...prev,
-      location,
-    }));
+    setFormData((prev) => ({ ...prev, location }));
+  };
+
+  // Handle resource type and quantity
+  const handleResourceChange = (resourceType, quantity) => {
+    setFormData((prev) => {
+      const existingIndex = prev.neededResources.findIndex(r => r.resourceType === resourceType);
+      if (existingIndex >= 0) {
+        if (quantity <= 0) {
+          // Remove if quantity is zero or negative
+          const updated = prev.neededResources.filter(r => r.resourceType !== resourceType);
+          return { ...prev, neededResources: updated };
+        } else {
+          const updated = [...prev.neededResources];
+          updated[existingIndex].quantity = quantity;
+          return { ...prev, neededResources: updated };
+        }
+      } else if (quantity > 0) {
+        return {
+          ...prev,
+          neededResources: [...prev.neededResources, { resourceType, quantity }],
+        };
+      }
+      return prev;
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -42,7 +60,13 @@ const VictimDashboard = () => {
     try {
       await createReport(formData);
       alert('Report submitted');
-      setFormData({ disasterType: '', description: '', location: { coordinates: [] }, isSOS: false });
+      setFormData({
+        disasterType: '',
+        description: '',
+        location: { coordinates: [] },
+        isSOS: false,
+        neededResources: [],
+      });
     } catch (err) {
       alert('Error: ' + err.response?.data?.message);
     } finally {
@@ -107,6 +131,31 @@ const VictimDashboard = () => {
               rows="4"
               placeholder="Describe what happened and what support is needed"
             />
+          </div>
+
+          {/* Resource selection with quantity inputs */}
+          <div className="field">
+            <label>What do you need? (type and quantity)</label>
+            <div className="grid grid-cols-2 gap-3 mt-2">
+              {['food', 'water', 'medical', 'shelter', 'transport', 'other'].map(res => {
+                const current = formData.neededResources.find(r => r.resourceType === res);
+                const quantity = current ? current.quantity : '';
+                return (
+                  <div key={res} className="flex items-center gap-2">
+                    <span className="w-20 capitalize">{res}</span>
+                    <input
+                      type="number"
+                      min="0"
+                      step="1"
+                      value={quantity}
+                      onChange={(e) => handleResourceChange(res, parseInt(e.target.value) || 0)}
+                      className="border rounded px-2 py-1 w-24"
+                      placeholder="Qty"
+                    />
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
           <div className="field">

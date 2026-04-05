@@ -19,7 +19,7 @@ const disasterReportSchema = new mongoose.Schema({
       required: true,
     },
     coordinates: {
-      type: [Number], // [longitude, latitude]
+      type: [Number],
       required: true,
     },
   },
@@ -42,13 +42,25 @@ const disasterReportSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  // 👇 UPDATED: neededResources as array of objects
+  neededResources: [{
+    resourceType: {
+      type: String,
+      enum: ['food', 'water', 'medical', 'shelter', 'transport', 'other'],
+      required: true,
+    },
+    quantity: {
+      type: Number,
+      required: true,
+      min: 1,
+    },
+  }],
   createdAt: {
     type: Date,
     default: Date.now,
   },
 });
 
-// Geospatial index for location queries
 disasterReportSchema.index({ location: '2dsphere' });
 
 const DisasterReport = mongoose.model('DisasterReport', disasterReportSchema);

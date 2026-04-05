@@ -29,3 +29,4 @@ export const deleteResource = (id) => API.delete(`/resources/${id}`);
 export const getUnverifiedNgos = () => API.get('/admin/ngos/unverified');
 export const verifyNgo = (id) => API.patch(`/admin/verify/${id}`);
 export const getStats = () => API.get('/admin/stats');
+export const getRecommendations = (reportId) => API.get(`/reports/${reportId}/recommendations`);
