@@ -51,4 +51,3 @@ io.on('connection', (socket) => {
     console.log('❌ Connection error:', err.message);
   });
 });
-c
