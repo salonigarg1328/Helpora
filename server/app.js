@@ -51,3 +51,6 @@ io.on('connection', (socket) => {
     console.log('❌ Connection error:', err.message);
   });
 });
+httpServer.listen(port, () => {
+  console.log(`🚀 Server running at http://localhost:${port}`);
+});
