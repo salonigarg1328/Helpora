@@ -39,34 +39,9 @@ Helpora is a full‑stack web application that connects disaster victims with ne
 
 ## 📁 Project Structure
 
+
 ```
-Helpora/
-├── client/ # React frontend
-│ ├── src/
-│ │ ├── components/ # Reusable UI (MapPicker, ResourceManager, etc.)
-│ │ ├── pages/ # All views (LandingPage, Login, Dashboard...)
-│ │ ├── services/ # API calls & socket
-│ │ └── App.jsx
-│ └── package.json
-├── server/ # Node.js backend
-│ ├── config/ # Database connection
-│ ├── controllers/ # Business logic (auth, reports, resources, admin)
-│ ├── models/ # Mongoose schemas (User, DisasterReport, Resource)
-│ ├── routes/ # Express routes
-│ ├── middleware/ # JWT protection & role checks
-│ ├── utils/ # JWT helpers, geospatial distance
-│ └── app.js
-└── README.md
 
-text
-This renders as a clean, indented tree. The backticks (```) create a monospaced block, and the spaces/line characters (├─, │, └─) are standard Unicode that work on GitHub and most Markdown renderers.
-
-what to cipy paste
-We need to provide the exact Markdown code that the user can copy-paste into their README.md to display the directory tree. The user asked "what to cipy paste". So we should output the code block content.
-
-Here's the exact Markdown you can copy and paste into your README.md file to display the directory tree:
-
-markdown
 Helpora/
 ├── client/ # React frontend
 │ ├── src/
