@@ -44,7 +44,7 @@ const LandingPage = () => {
 
   return (
     <div>
-      <header className="topbar">
+      <header className="topbar  sticky-header">
         <div className="container topbar-inner">
           <Link to="/" className="brand" aria-label="Helpora home">
             <span className="brand-mark">H+</span>
