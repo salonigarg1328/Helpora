@@ -10,6 +10,7 @@ import connectDB from "./config/db.js";
 import reportRoutes from './routes/reportRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import resourceRoutes from './routes/resourceRoutes.js';
+import chatRoutes from './routes/chatRoutes.js';
 const app = express();
 const httpServer = createServer(app);          // create HTTP server
 const io = new Server(httpServer, {
@@ -27,6 +28,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
 app.use(cors({credentials:true}));
 app.use('/api/admin', adminRoutes);
+app.use('/api/chat', chatRoutes);
 
 // Make io accessible in controllers (optional)
 app.set('io', io);

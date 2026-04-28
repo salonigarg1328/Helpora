@@ -13,7 +13,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import AdminDashboard from './pages/AdminDashboard';
-
+import ChatWidget from './components/ChatWidget';
 function App() {
   return (
     <BrowserRouter>
@@ -68,6 +68,7 @@ function App() {
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+         <ChatWidget />
     </BrowserRouter>
   );
 }
