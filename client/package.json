@@ -15,7 +15,6 @@
     "leaflet-geosearch": "^4.2.2",
     "lodash.debounce": "^4.0.8",
     "react": "^19.2.0",
-    "react-chat-widget": "^3.1.4",
     "react-chatbot-kit": "^2.2.2",
     "react-dom": "^19.2.0",
     "react-hot-toast": "^2.6.0",
